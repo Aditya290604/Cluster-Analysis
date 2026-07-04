@@ -15,15 +15,8 @@ TARGETS = {
         "core_radius": 5.0,
         "full_radius": 12.0,
         "min_parallax": 0.1,
-        "max_parallax": 0.8
-    },
-    "Pleiades_M45": {
-        "ra": "03:47:24",
-        "dec": "+24:07:00",
-        "core_radius": 60.0,  
-        "full_radius": 120.0,
-        "min_parallax": 2.0,  # The Pleiades sits at ~7.3 mas
-        "max_parallax": 12.0
+        "max_parallax": 0.8,
+        "max_gmag": 18.0  # NEW: Drop faint stars with massive errors
     },
     "Messier_36": {
         "ra": "05:36:12",
@@ -31,34 +24,30 @@ TARGETS = {
         "core_radius": 5.0,
         "full_radius": 15.0,
         "min_parallax": 0.1,
-        "max_parallax": 2.5
-    },
-    "Messier_47": {
-        "ra": "07:36:35",
-        "dec": "-14:28:57",
-        "core_radius": 10.0,
-        "full_radius": 25.0,
-        "min_parallax": 0.1,
-        "max_parallax": 5.0
+        "max_parallax": 2.5,
+        "max_gmag": 18.0  # NEW: Drop faint stars with massive errors
     }
+    # Note: Proximate clusters like the Pleiades are omitted here 
+    # because their high spatial variance breaks the 5D GMM logic.
 }
 
 # ---> SET YOUR TARGET CLUSTER HERE <---
-ACTIVE_CLUSTER = "Messier_36"
+ACTIVE_CLUSTER = "NGC_7419"
 
 def main():
     config = TARGETS[ACTIVE_CLUSTER]
     print(f"Initializing Generalized Pipeline for: {ACTIVE_CLUSTER}")
     print(f"Target Coordinates: RA {config['ra']}, Dec {config['dec']}")
     
-    # Step 1: Data Fetching
+    # Step 1: Data Fetching (Dynamic Parallax Bounds & Magnitude Limit)
     print(f"\n--- STEP 1: Data Retrieval ({config['full_radius']}' radius) ---")
     df = fetch_and_clean_data(
         config['ra'], 
         config['dec'], 
         config['full_radius'],
         config['min_parallax'],
-        config['max_parallax']
+        config['max_parallax'],
+        config['max_gmag']  # Pass the new parameter here
     )
     print(f"Total sources retrieved: {len(df)}")
     

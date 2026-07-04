@@ -5,23 +5,45 @@ A generalized machine learning pipeline for identifying open star cluster member
 This project reproduces and scales the membership analysis methodology from recent observational astrophysics literature (Chakraborty et al., 2025).
 
 ## Architecture
-1. **Data Pipeline (`data_pipeline.py`):** Uses `astroquery` and ADQL to fetch astrometric and photometric data from the Gaia DR3 catalog, applying strict quality filters (e.g., RUWE < 1.4).
-2. **Unsupervised Learning (`gmm_model.py`):** Applies a 5-dimensional Gaussian Mixture Model (PMRA, PMDEC, parallax, RA, Dec) to the cluster's core radius to isolate high-probability members.
-3. **Supervised Learning (`rf_model.py`):** Trains a Random Forest Classifier on the GMM output to predict cluster membership across a wider tidal radius, followed by a 1.5 * IQR physical parallax filter.
-4. **Visualization (`visualizer.py`):** Generates publication-grade Vector Point Diagrams (kinematics) and Color-Magnitude Diagrams (photometry).
 
-## Known Scientific Limitations
+*   **Data Pipeline (`data_pipeline.py`):** Uses `astroquery` and ADQL to fetch astrometric and photometric data from the Gaia DR3 catalog, applying strict quality filters.
+*   **Unsupervised Learning (`gmm_model.py`):** Applies a 5-dimensional Gaussian Mixture Model (PMRA, PMDEC, parallax, RA, Dec) to the cluster's core radius to isolate high-probability members.
+*   **Supervised Learning (`rf_model.py`):** Trains a Random Forest Classifier on the GMM output to predict cluster membership across a wider tidal radius.
+*   **Visualization (`visualizer.py`):** Generates publication-grade Vector Point Diagrams (kinematics) and Color-Magnitude Diagrams (photometry).
 
-This pipeline is highly optimized for **distant, compact, and relatively young open clusters**. It will experience algorithmic or physical failures under the following parameters:
+## Conditions for Successful Execution
 
-### Algorithmic Limits
-*   **The Spatial Variance Trap (Proximity):** The GMM evaluates cluster "tightness" across all 5 dimensions (including RA and Dec)[cite: 3]. If applied to highly proximate clusters (e.g., the Pleiades), the massive spatial spread across the sky will confuse the GMM, causing it to misclassify stationary background space as the cluster. 
-*   **Atypical Cluster Shapes:** The final pipeline step utilizes a strict 1.5 * IQR statistical cutoff to remove parallax outliers[cite: 3]. For clusters experiencing severe tidal disruption or highly elongated shapes, this rigid bound may clip valid fringe members (similar to how strict probability limits initially missed known supergiant members in NGC 7419)[cite: 2, 3].
+To run this pipeline without breaking its mathematical and physical logic, the following parameters and conditions must be met:
 
-### Observational (Telescope) Limits
-*   **Extreme Crowding:** To avoid blended starlight, the pipeline drops any source with a Renormalized Unit Weight Error (RUWE) > 1.4[cite: 3]. If pointed at an extremely dense target, such as a Globular Cluster, the high blending will cause the pipeline to discard the majority of the dataset[cite: 2].
-*   **The Faintness Limit:** The pipeline relies on Gaia G-band photometry, which has a physical faintness limit of roughly 20 magnitudes[cite: 2, 3]. For distant clusters (e.g., ~3.6 kpc), stars with masses lower than roughly 1.2 $M_{\odot}$ will not be captured by the telescope, meaning the pipeline cannot map the low-mass population[cite: 2, 3].
+*   **Distant and Compact Targets:** The target cluster must be relatively distant (like NGC 7419 or Messier 36) so it appears as a tight, concentrated point in the sky[cite: 2, 3]. This ensures its spatial spread is incredibly low, allowing the 5-dimensional GMM to correctly identify the cluster[cite: 3].
+*   **Dynamic Parallax Queries:** The ADQL data extraction must use dynamic, cluster-specific minimum and maximum parallax bounds rather than hardcoded limits[cite: 3].
+*   **Unrestricted Plotting Axes:** The Vector Point Diagram must use dynamic axis scaling so that clusters with high proper motion are not artificially cropped.
+*   **Strict Quality Filters:** The raw data must be filtered to remove null values for proper motion and magnitudes, and must enforce a strict Renormalized Unit Weight Error (RUWE) score to drop blended objects[cite: 3].
+*   **Moderate Target Density:** The target cannot be an overwhelmingly dense cluster (like a globular cluster), as intense starlight blending forces the RUWE filter to discard the dataset[cite: 2, 3].
+*   **Observable Magnitudes:** The cluster's population must be bright enough to be captured by Gaia's G-band faintness limit[cite: 2, 3].
+
+## Exact Physical and Algorithmic Limits
+
+If a target cluster or the raw data violates these boundaries, the machine learning logic will fail:
+
+*   **The Faintness Boundary:** The pipeline relies on the Gaia telescope's G-band, which has a physical faintness limit of approximately 20 magnitudes[cite: 2, 3].
+*   **The Mass Threshold:** For a distant, obscured cluster (e.g., at ~3.6 kpc with an extinction of 5.2 mag), the 20-magnitude limit physically restricts the pipeline to detecting stars with a mass greater than roughly 1.2 solar masses[cite: 2, 3].
+*   **The Resolution Limit:** The pipeline strictly requires a RUWE score of < 1.4 to ensure it evaluates clean, unblended stars[cite: 3].
+*   **The Core Radius Limit:** The GMM requires a tight central radius to generate its training set, which is constrained to a 5-arcminute core radius in this architecture[cite: 2, 3].
+*   **The Probability Cutoffs:** For a star to be classified as a member, it must cross a mathematical probability limit of > 0.9 (90%) in both the unsupervised GMM and supervised Random Forest phases[cite: 2, 3].
+*   **The IQR Outlier Bound:** The final data filter strictly limits accepted members to a parallax range defined by 1.5 times the Inter-Quartile Range (IQR)[cite: 3]. This rigid boundary can accidentally exclude true cluster members on the fringes[cite: 2, 3].
+
+## Known Failure Triggers
+
+The pipeline will experience algorithmic failures under the following historical misconfigurations:
+
+*   **Hardcoded ADQL Parallax Bounds:** Using static limits (e.g., 0.1 to 0.8 mas) completely excludes proximate clusters from the raw data download[cite: 2, 3].
+*   **Hardcoded Plot Axes:** Limiting the Vector Point Diagram to static bounds (e.g., [-15, 15] mas/yr) crops high-velocity clusters off the visual frame.
+*   **The Spatial Variance Trap:** Calculating GMM variance across all 5 dimensions simultaneously (PMRA, PMDEC, parallax, RA, Dec) for highly proximate targets[cite: 2, 3].
+*   **Proximity-Induced Spread:** Targeting clusters that are too close to Earth causes a massive spatial spread across the sky, leading to high RA and Dec variance[cite: 2].
+*   **Kinematic Misclassification:** When targeting proximate clusters, the massive spatial spread causes the GMM math to misclassify the dense, stationary background space as the tighter target cluster[cite: 3].
 
 ## Usage
+
 Set your target cluster coordinates and radius parameters in `main.py` and run:
 `python main.py`
