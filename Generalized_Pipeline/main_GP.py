@@ -26,6 +26,39 @@ TARGETS = {
         "min_parallax": 0.1,
         "max_parallax": 2.5,
         "max_gmag": 18.0  # NEW: Drop faint stars with massive errors
+    },
+    "NGC_663": {
+        # A biological twin to NGC 7419. It is located roughly 2,700 parsecs away and is very young (20-25 million years). 
+        # It is famous in astrophysics for housing a massive population of massive B-type stars and Be stars.
+        "ra": "01:46:00",
+        "dec": "+61:15:00",
+        "core_radius": 5.0,
+        "full_radius": 15.0,
+        "min_parallax": 0.1,  
+        "max_parallax": 1.0,  # Parallax is around 0.37 mas
+        "max_gmag": 18.0
+    },
+    "NGC_869": {
+        # Also known as 'h Persei', this is one half of the famous "Double Cluster".
+        # It is incredibly young (~14 million years) and distant (~2,300 parsecs), making its kinematic core exceptionally tight.
+        "ra": "02:19:02",
+        "dec": "+57:07:48",
+        "core_radius": 5.0,
+        "full_radius": 15.0,
+        "min_parallax": 0.1,
+        "max_parallax": 1.0,  # Gaia DR3 parallax is roughly 0.43 mas
+        "max_gmag": 18.0
+    },
+    "Messier_38": {
+        # A direct neighbor to Messier 36 in the Auriga constellation. 
+        # It is closer (around 1.07 kpc away) and older (~220 million years), which will produce a noticeably different Color-Magnitude Diagram than the young clusters, testing the pipeline's versatility.
+        "ra": "05:28:40",
+        "dec": "+35:49:08",
+        "core_radius": 5.0,
+        "full_radius": 15.0,
+        "min_parallax": 0.3,
+        "max_parallax": 1.8,  # True parallax hovers around 0.93 mas
+        "max_gmag": 18.0
     }
     # Note: Proximate clusters like the Pleiades are omitted here 
     # because their high spatial variance breaks the 5D GMM logic.
