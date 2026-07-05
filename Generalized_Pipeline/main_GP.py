@@ -39,15 +39,13 @@ TARGETS = {
         "max_gmag": 18.0
     },
     "NGC_869": {
-        # Also known as 'h Persei', this is one half of the famous "Double Cluster".
-        # It is incredibly young (~14 million years) and distant (~2,300 parsecs), making its kinematic core exceptionally tight.
-        "ra": "02:19:02",
-        "dec": "+57:07:48",
-        "core_radius": 5.0,
-        "full_radius": 15.0,
-        "min_parallax": 0.1,
-        "max_parallax": 1.0,  # Gaia DR3 parallax is roughly 0.43 mas
-        "max_gmag": 18.0
+        "ra": "02:18:57.80",
+        "dec": "+57:08:02.0",
+        "core_radius": 5.0,        # Standard GMM kinematic core
+        "full_radius": 15.0,       # ⚠️ Angular size missing in all databases. Default sweet spot applied.
+        "min_parallax": 0.1,       # True Parallax: ~0.39 mas (Buffer applied)
+        "max_parallax": 1.09,
+        "max_gmag": 18.0           # Astrometric quality floor
     },
     "Messier_38": {
         # A direct neighbor to Messier 36 in the Auriga constellation. 
@@ -65,7 +63,7 @@ TARGETS = {
 }
 
 # ---> SET YOUR TARGET CLUSTER HERE <---
-ACTIVE_CLUSTER = "NGC_7419"
+ACTIVE_CLUSTER = "NGC_869"
 
 def main():
     config = TARGETS[ACTIVE_CLUSTER]

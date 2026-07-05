@@ -47,3 +47,21 @@ The pipeline will experience algorithmic failures under the following historical
 
 Set your target cluster coordinates and radius parameters in `main.py` and run:
 `python main.py`
+
+
+## The Configuration Hub (`main.py`)
+
+This pipeline does not rely on hardcoded, single-use limits. Instead, it uses a central configuration hub called the `TARGETS` dictionary. To process a new cluster, you simply add its physical parameters to this dictionary.
+
+```python
+TARGETS = {
+    "Target_Cluster_Name": {
+        "ra": "HH:MM:SS",          # Right Ascension 
+        "dec": "+DD:MM:SS",        # Declination
+        "core_radius": 5.0,        # Pure kinematic center (arcminutes)
+        "full_radius": 15.0,       # Extended tidal halo (arcminutes)
+        "min_parallax": 0.1,       # Distance lower bound (mas)
+        "max_parallax": 1.0,       # Distance upper bound (mas)
+        "max_gmag": 18.0           # Astrometric quality floor (Apparent Magnitude)
+    }
+}
