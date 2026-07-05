@@ -1,7 +1,7 @@
-from NGC7419_Reproduction.data_pipeline import fetch_and_clean_data
-from NGC7419_Reproduction.gmm_model import run_gmm
-from NGC7419_Reproduction.rf_model import run_rf
-from NGC7419_Reproduction.visualizer import plot_results
+from data_pipeline import fetch_and_clean_data
+from gmm_model import run_gmm
+from rf_model import run_rf
+from visualizer import plot_results
 
 # Hardcoded cluster parameters from the paper
 RA_STR = "22:54:18.96"
